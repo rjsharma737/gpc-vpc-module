@@ -44,4 +44,26 @@ variable "service_account_name" {
   description = "The name of the service account to create."
 }
 
+variable "apis" {
+  type = list(string)
+
+  default = [
+    "compute.googleapis.com",
+    "container.googleapis.com",
+    "containerregistry.googleapis.com",
+    "dns.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
+    "servicemanagement.googleapis.com",
+    "sql-component.googleapis.com",
+    "sqladmin.googleapis.com",
+    "storage-api.googleapis.com",
+  ]
+}
+
+
+
+
+
+
 
