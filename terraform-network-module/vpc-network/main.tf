@@ -33,13 +33,16 @@ resource "google_compute_subnetwork" "subnet" {
   network                  = google_compute_network.vpc.self_link
   ip_cidr_range            = local.subnet_cidr
   #secondary_ip_range       = local.subnet_secondary_ranges 
-   dynamic "secondary_ip_range" {
-    for_each = var.subnet_secondary_ranges
-    content {
-      range_name    = secondary_ip_range.value.range_name
-      ip_cidr_range = secondary_ip_range.value.ip_cidr_range
-    }
+  secondary_ip_range {
+    range_name    = "pod-range"
+    ip_cidr_range = var.pod_range
   }
+
+  secondary_ip_range {
+    range_name    = "svc-range"
+    ip_cidr_range = var.svc_range
+  }
+
   private_ip_google_access = var.enable_private_ip_google_access
 }
  /*
