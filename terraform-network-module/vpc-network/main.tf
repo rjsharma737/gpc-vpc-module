@@ -58,16 +58,6 @@ locals {
   svc_range_name = "${var.project}-${var.environment}-svc-range"
   pod_range_cidr = var.create_secondary_ranges ? var.pod_range_cidr : null
   svc_range_cidr = var.create_secondary_ranges ? var.svc_range_cidr : null
-  subnet_secondary_ranges = var.create_secondary_ranges ? [
-    {
-      range_name = local.pod_range_name
-      ip_cidr_range = local.pod_range_cidr
-    },
-    {
-      range_name = local.svc_range_name
-      ip_cidr_range = local.svc_range_cidr
-    }
-  ] : null
 }
 
 resource "google_compute_network" "vpc" {
@@ -81,22 +71,17 @@ resource "google_compute_subnetwork" "subnet" {
   region                   = var.region
   network                  = google_compute_network.vpc.self_link
   ip_cidr_range            = local.subnet_cidr
-  secondary_ip_range       = var.create_secondary_ranges ? local.subnet_secondary_ranges : null
   private_ip_google_access = var.enable_private_ip_google_access
+
+  secondary_ip_range {
+    range_name    = local.pod_range_name
+    ip_cidr_range = local.pod_range_cidr
+  }
+
+  secondary_ip_range {
+    range_name    = local.svc_range_name
+    ip_cidr_range = local.svc_range_cidr
+  }
 }
 
-resource "google_compute_subnetwork_range" "pod_range" {
-  count         = var.create_secondary_ranges && local.pod_range_cidr != "" ? 1 : 0
-  name          = local.pod_range_name
-  subnetwork    = google_compute_subnetwork.subnet.self_link
-  ip_cidr_range = local.pod_range_cidr
-}
 
-resource "google_compute_subnetwork_range" "svc_range" {
-  count         = var.create_secondary_ranges && local.svc_range_cidr != "" ? 1 : 0
-  name          = local.svc_range_name
-  subnetwork    = google_compute_subnetwork.subnet.self_link
-  ip_cidr_range = local.svc_range_cidr
-}
-
-  
