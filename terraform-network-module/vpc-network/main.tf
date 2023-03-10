@@ -51,7 +51,6 @@ resource "google_compute_subnetwork_secondary_range" "svc_range" {
 }
 */
    
-
 locals {
   subnet_name = "${var.project}-${var.environment}-subnet"
   subnet_cidr = var.create_subnet ? var.subnet_ip_cidr_range : null
@@ -82,23 +81,22 @@ resource "google_compute_subnetwork" "subnet" {
   region                   = var.region
   network                  = google_compute_network.vpc.self_link
   ip_cidr_range            = local.subnet_cidr
-  secondary_ip_range       = local.subnet_secondary_ranges 
+  secondary_ip_range       = var.create_secondary_ranges ? local.subnet_secondary_ranges : null
   private_ip_google_access = var.enable_private_ip_google_access
 }
- 
+
 resource "google_compute_subnetwork_range" "pod_range" {
-  count           = local.pod_range_cidr != null ? 1 : 0
-  name            = local.pod_range_name
-  subnetwork      = google_compute_subnetwork.subnet.self_link
-  ip_cidr_range   = local.pod_range_cidr
+  count         = var.create_secondary_ranges && local.pod_range_cidr != "" ? 1 : 0
+  name          = local.pod_range_name
+  subnetwork    = google_compute_subnetwork.subnet.self_link
+  ip_cidr_range = local.pod_range_cidr
 }
 
 resource "google_compute_subnetwork_range" "svc_range" {
-  count           = local.svc_range_cidr != null ? 1 : 0
-  name            = local.svc_range_name
-  subnetwork      = google_compute_subnetwork.subnet.self_link
-  ip_cidr_range   = local.svc_range_cidr
+  count         = var.create_secondary_ranges && local.svc_range_cidr != "" ? 1 : 0
+  name          = local.svc_range_name
+  subnetwork    = google_compute_subnetwork.subnet.self_link
+  ip_cidr_range = local.svc_range_cidr
 }
 
-   
   
