@@ -41,7 +41,6 @@ resource "google_compute_subnetwork" "subnet" {
       range_name    = "svc-range"
       ip_cidr_range = var.service_range_cidr
     }
-  }
   private_ip_google_access = var.enable_private_ip_google_access
 }
   /*
