@@ -53,12 +53,12 @@ variable "apis" {
     "container.googleapis.com",
     "containerregistry.googleapis.com",
     "dns.googleapis.com",
-    "logging.googleapis.com",
     "monitoring.googleapis.com",
-    "servicemanagement.googleapis.com",
-    "sql-component.googleapis.com",
+    "servicenetworking.googleapis.com",
     "sqladmin.googleapis.com",
     "storage-api.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "redis.googleapis.com",
   ]
 }
 
