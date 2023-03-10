@@ -1,9 +1,5 @@
 resource "google_project_service" "enable_apis" {
   project = var.project
-  service = "container.googleapis.com"
-  service = "cloudresourcemanager.googleapis.com"
-  service = "redis.googleapis.com"
-  service = "sqladmin.googleapis.com"
-  service = "servicenetworking.googleapis.com"
-  service = "dns.googleapis.com"
+  service = "container.googleapis.com,cloudresourcemanager.googleapis.com,redis.googleapis.com,sqladmin.googleapis.com,servicenetworking.googleapis.com,dns.googleapis.com"
 }
+
