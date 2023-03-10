@@ -13,22 +13,13 @@ locals {
   svc_range_name = "${var.project}-${var.environment}-svc-range"
   pod_range_cidr = var.create_secondary_ranges ? var.pod_range_cidr : null
   svc_range_cidr = var.create_secondary_ranges ? var.svc_range_cidr : null
-  #subnet_secondary_ranges = var.create_secondary_ranges ? {
-  #  pod_range_cidr = var.pod_range_cidr
-  #  svc_range_cidr = var.svc_range_cidr
-  #} : null
-#}
-  subnet_secondary_ranges = var.create_secondary_ranges ? [
-    {
-      range_name    = "pod-range"
-      ip_cidr_range = var.pod_range_cidr
-    },
-    {
-      range_name    = "svc-range"
-      ip_cidr_range = var.svc_range_cidr
-    }
-  ] : null
+  subnet_secondary_ranges = var.create_secondary_ranges ? {
+    pod_range_cidr = var.pod_range_cidr
+    svc_range_cidr = var.svc_range_cidr
+  } : null
 }
+
+   
 
 resource "google_compute_network" "vpc" {
   name                    = "${var.project}-vpc-network"
@@ -44,7 +35,7 @@ resource "google_compute_subnetwork" "subnet" {
   secondary_ip_range       = local.subnet_secondary_ranges 
   private_ip_google_access = var.enable_private_ip_google_access
 }
-/*
+  
 resource "google_compute_subnetwork_secondary_range" "pod_range" {
   count           = local.pod_range_cidr != null ? 1 : 0
   name            = local.pod_range_name
@@ -57,22 +48,5 @@ resource "google_compute_subnetwork_secondary_range" "svc_range" {
   name            = local.svc_range_name
   subnetwork      = google_compute_subnetwork.subnet.self_link
   ip_cidr_range   = local.svc_range_cidr
-}
-  */
-
-
-  
-resource "google_compute_subnetwork_internal_ip_range" "pod_range" {
-  subnetwork       = google_compute_subnetwork.subnet.self_link
-  name            = local.pod_range_name
-  ip_cidr_range    = var.pod_range_secondary_ip_range
-  private_ip_google_access = true
-}
-
-resource "google_compute_subnetwork_internal_ip_range" "svc_range" {
-  subnetwork       = google_compute_subnetwork.subnet.self_link
-  name            = local.svc_range_name
-  ip_cidr_range    = var.svc_range_secondary_ip_range
-  private_ip_google_access = true
 }
 
