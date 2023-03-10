@@ -31,7 +31,7 @@ resource "google_project_iam_member" "compute_storage_admin" {
 }
 
 
-#Storage Admin and Storage Object Viewer permission for newly service account into buckets
+#Storage Admin and Storage Object Viewer permission for newly created service account into buckets
 resource "google_storage_bucket_iam_member" "asia_artifacts_viewer" {
   bucket = "asia.artifacts.greymatter-development.appspot.com"
   role   = "roles/storage.objectViewer"
