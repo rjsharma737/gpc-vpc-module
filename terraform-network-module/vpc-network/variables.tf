@@ -25,7 +25,6 @@ variable "create_secondary_ranges" {
   default = true
 }
 
-/*
 variable "pod_range_cidr" {
   type    = string
   default = ""
@@ -35,15 +34,6 @@ variable "svc_range_cidr" {
   type    = string
   default = ""
 }
-*/
-  
-variable "subnet_secondary_ranges" {
-  type = map(object({
-    range_name    = string
-    ip_cidr_range = string
-  }))
-}
-
 
 
 variable "enable_private_ip_google_access" {
