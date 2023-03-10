@@ -25,12 +25,16 @@ variable "create_secondary_ranges" {
   default = true
 }
 
-variable "pod_range_cidr" {
-  description = "The CIDR range for the pod IP range"
-}
+#variable "pod_range_cidr" {
+#  description = "The CIDR range for the pod IP range"
+#}
 
-variable "svc_range_cidr" {
-  description = "The CIDR range for the service IP range"
+#variable "svc_range_cidr" {
+#  description = "The CIDR range for the service IP range"
+#}
+
+variable "subnet_secondary_ranges" {
+  type = map(any)
 }
 
 variable "enable_private_ip_google_access" {
