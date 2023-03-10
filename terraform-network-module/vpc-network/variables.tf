@@ -44,7 +44,6 @@ variable "enable_private_ip_google_access" {
 
 variable "service_account_name" {
   description = "The name of the service account to create."
-  default = devops-automationuser
 }
 
 
