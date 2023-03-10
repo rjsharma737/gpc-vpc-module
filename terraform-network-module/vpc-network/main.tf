@@ -30,7 +30,8 @@ resource "google_compute_subnetwork" "subnet" {
   region                   = var.region
   network                  = google_compute_network.vpc.self_link
   ip_cidr_range            = local.subnet_cidr
-  secondary_ip_range       = local.subnet_secondary_ranges
+  #secondary_ip_range       = local.subnet_secondary_ranges
+  secondary_ip_range       = values(local.subnet_secondary_ranges)
   private_ip_google_access = var.enable_private_ip_google_access
 }
 
