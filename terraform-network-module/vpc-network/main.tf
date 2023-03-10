@@ -59,19 +59,52 @@ resource "google_compute_subnetwork_secondary_range" "svc_range" {
 */
    
   
+resource "google_compute_subnetwork" "subnet" {
+  for_each = var.subnets
+
+  name          = each.value.name
+  ip_cidr_range = each.value.ip_cidr_range
+  network       = google_compute_network.network.self_link
+  region        = each.value.region
+
+  secondary_ip_range       = [for s in var.subnet_secondary_ranges : {
+    range_name    = s.value.range_name
+    ip_cidr_range = s.value.ip_cidr_range
+  } if s.value.subnet_name == each.value.name]
+
+  depends_on = [
+    google_compute_network.network
+  ]
+}
+
 resource "google_compute_subnetwork_range" "pod_range" {
-  count        = local.pod_range_cidr != null ? 1 : 0
-  range_name   = local.pod_range_name
-  subnetwork   = google_compute_subnetwork.subnet.self_link
-  ip_cidr_range = local.pod_range_cidr
+  for_each = var.subnet_secondary_ranges
+
+  range_name    = each.value.range_name
+  ip_cidr_range = each.value.ip_cidr_range
+  network       = google_compute_network.network.self_link
+  subnetwork    = google_compute_subnetwork.subnet[each.value.subnet_name].self_link
+
+  depends_on = [
+    google_compute_network.network,
+    google_compute_subnetwork.subnet
+  ]
 }
 
 resource "google_compute_subnetwork_range" "svc_range" {
-  count        = local.svc_range_cidr != null ? 1 : 0
-  range_name   = local.svc_range_name
-  subnetwork   = google_compute_subnetwork.subnet.self_link
-  ip_cidr_range = local.svc_range_cidr
+  for_each = var.subnet_secondary_ranges
+
+  range_name    = each.value.range_name
+  ip_cidr_range = each.value.ip_cidr_range
+  network       = google_compute_network.network.self_link
+  subnetwork    = google_compute_subnetwork.subnet[each.value.subnet_name].self_link
+
+  depends_on = [
+    google_compute_network.network,
+    google_compute_subnetwork.subnet
+  ]
 }
+
 
    
   
