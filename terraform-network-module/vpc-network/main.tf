@@ -58,7 +58,12 @@ locals {
   svc_range_name = "${var.project}-${var.environment}-svc-range"
   pod_range_cidr = var.create_secondary_ranges ? var.pod_range_cidr : null
   svc_range_cidr = var.create_secondary_ranges ? var.svc_range_cidr : null
+  subnet_secondary_ranges = var.create_secondary_ranges ? {
+    pod_range_cidr = local.pod_range_cidr
+    svc_range_cidr = local.svc_range_cidr
+  } : null
 }
+
 
 resource "google_compute_network" "vpc" {
   name                    = "${var.project}-vpc-network"
