@@ -32,10 +32,17 @@ resource "google_compute_subnetwork" "subnet" {
   region                   = var.region
   network                  = google_compute_network.vpc.self_link
   ip_cidr_range            = local.subnet_cidr
-  secondary_ip_range       = local.subnet_secondary_ranges 
+  #secondary_ip_range       = local.subnet_secondary_ranges 
+   dynamic "secondary_ip_range" {
+    for_each = var.subnet_secondary_ranges
+    content {
+      range_name    = secondary_ip_range.value.range_name
+      ip_cidr_range = secondary_ip_range.value.ip_cidr_range
+    }
+  }
   private_ip_google_access = var.enable_private_ip_google_access
 }
- 
+ /*
 resource "google_compute_subnetwork_secondary_range" "pod_range" {
   count           = local.pod_range_cidr != null ? 1 : 0
   name            = local.pod_range_name
@@ -48,6 +55,22 @@ resource "google_compute_subnetwork_secondary_range" "svc_range" {
   name            = local.svc_range_name
   subnetwork      = google_compute_subnetwork.subnet.self_link
   ip_cidr_range   = local.svc_range_cidr
+}
+*/
+   
+  
+resource "google_compute_subnetwork_range" "pod_range" {
+  count        = local.pod_range_cidr != null ? 1 : 0
+  range_name   = local.pod_range_name
+  subnetwork   = google_compute_subnetwork.subnet.self_link
+  ip_cidr_range = local.pod_range_cidr
+}
+
+resource "google_compute_subnetwork_range" "svc_range" {
+  count        = local.svc_range_cidr != null ? 1 : 0
+  range_name   = local.svc_range_name
+  subnetwork   = google_compute_subnetwork.subnet.self_link
+  ip_cidr_range = local.svc_range_cidr
 }
 
    
