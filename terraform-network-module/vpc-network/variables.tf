@@ -38,11 +38,6 @@ variable "enable_private_ip_google_access" {
   default = true
 }
 
-#iam
-variable "project" {
-  description = "The ID of the project in which the service account will be created."
-}
-
 variable "service_account_name" {
   description = "The name of the service account to create."
 }
