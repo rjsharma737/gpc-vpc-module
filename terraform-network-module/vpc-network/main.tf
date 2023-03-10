@@ -59,23 +59,6 @@ resource "google_compute_subnetwork_secondary_range" "svc_range" {
 */
    
   
-resource "google_compute_subnetwork" "subnet" {
-  for_each = var.subnets
-
-  name          = each.value.name
-  ip_cidr_range = each.value.ip_cidr_range
-  network       = google_compute_network.network.self_link
-  region        = each.value.region
-
-  secondary_ip_range       = [for s in var.subnet_secondary_ranges : {
-    range_name    = s.value.range_name
-    ip_cidr_range = s.value.ip_cidr_range
-  } if s.value.subnet_name == each.value.name]
-
-  depends_on = [
-    google_compute_network.network
-  ]
-}
 
 resource "google_compute_subnetwork_range" "pod_range" {
   for_each = var.subnet_secondary_ranges
