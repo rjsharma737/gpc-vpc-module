@@ -18,13 +18,13 @@ locals {
   #  svc_range_cidr = var.svc_range_cidr
   #} : null
 #}
- subnet_secondary_ranges = var.create_secondary_ranges ? [
+  subnet_secondary_ranges = var.create_secondary_ranges ? [
     {
-      range_name = var.pod_range_name
+      range_name    = "pod-range"
       ip_cidr_range = var.pod_range_cidr
     },
     {
-      range_name = var.svc_range_name
+      range_name    = "svc-range"
       ip_cidr_range = var.svc_range_cidr
     }
   ] : null
@@ -41,7 +41,7 @@ resource "google_compute_subnetwork" "subnet" {
   region                   = var.region
   network                  = google_compute_network.vpc.self_link
   ip_cidr_range            = local.subnet_cidr
-  #secondary_ip_range       = local.subnet_secondary_ranges 
+  secondary_ip_range       = local.subnet_secondary_ranges 
   private_ip_google_access = var.enable_private_ip_google_access
 }
 /*
