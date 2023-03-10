@@ -30,11 +30,10 @@ resource "google_compute_subnetwork" "subnet" {
   region                   = var.region
   network                  = google_compute_network.vpc.self_link
   ip_cidr_range            = local.subnet_cidr
-  #secondary_ip_range       = local.subnet_secondary_ranges
-  secondary_ip_range       = values(local.subnet_secondary_ranges)
+  #secondary_ip_range       = local.subnet_secondary_ranges 
   private_ip_google_access = var.enable_private_ip_google_access
 }
-
+/*
 resource "google_compute_subnetwork_secondary_range" "pod_range" {
   count           = local.pod_range_cidr != null ? 1 : 0
   name            = local.pod_range_name
@@ -48,3 +47,21 @@ resource "google_compute_subnetwork_secondary_range" "svc_range" {
   subnetwork      = google_compute_subnetwork.subnet.self_link
   ip_cidr_range   = local.svc_range_cidr
 }
+  */
+
+
+  
+resource "google_compute_subnetwork_internal_ip_range" "pod_range" {
+  subnetwork       = google_compute_subnetwork.subnet.self_link
+  name            = local.pod_range_name
+  ip_cidr_range    = var.pod_range_secondary_ip_range
+  private_ip_google_access = true
+}
+
+resource "google_compute_subnetwork_internal_ip_range" "svc_range" {
+  subnetwork       = google_compute_subnetwork.subnet.self_link
+  name            = local.svc_range_name
+  ip_cidr_range    = var.svc_range_secondary_ip_range
+  private_ip_google_access = true
+}
+
