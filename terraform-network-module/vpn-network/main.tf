@@ -104,7 +104,3 @@ resource "google_compute_router" "router" {
     }
   }
 }
-
-output "vpn_gateway_public_ip" {
-  value = google_compute_vpn_gateway.gateway.public_ip_address
-}
