@@ -95,6 +95,7 @@ resource "google_storage_bucket_iam_binding" "jenkins_backupfiles_object_admin" 
   ]
 }
 
+/*
 #owner role in project gm-prod-common-services
 resource "google_project_iam_binding" "owner" {
   project = "gm-prod-common-services"
@@ -103,3 +104,4 @@ resource "google_project_iam_binding" "owner" {
     "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
   ]
 }
+*/
