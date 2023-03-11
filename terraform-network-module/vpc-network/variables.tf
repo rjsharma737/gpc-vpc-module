@@ -49,7 +49,7 @@ variable "service_account_name" {
 
 variable "enable_api_services" {
   type    = bool
-  default = true
+  default = ""
 }
 
 variable "apis" {
