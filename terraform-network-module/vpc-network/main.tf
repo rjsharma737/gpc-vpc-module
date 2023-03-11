@@ -77,7 +77,6 @@ resource "google_compute_subnetwork" "subnet" {
   network                  = google_compute_network.vpc.self_link
   ip_cidr_range            = local.subnet_cidr
   private_ip_google_access = var.enable_private_ip_google_access
-  service_account_name = var.service_account_name
 
   secondary_ip_range {
     range_name    = local.pod_range_name
