@@ -47,11 +47,6 @@ variable "service_account_name" {
   default     = "devops-automationuser"
 }
 
-variable "enable_api_services" {
-  type    = bool
-  default = "false"
-}
-
 variable "apis" {
   type = list(string)
 
