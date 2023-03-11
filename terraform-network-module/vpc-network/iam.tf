@@ -19,13 +19,13 @@ resource "google_project_iam_member" "owner" {
 
 #compute admin and compute storage admin IAM role to service account
 resource "google_project_iam_member" "compute_admin" {
-  project = "greymatter-deployment"
+  project = "greymatter-development"
   role    = "roles/compute.admin"
   member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "compute_storage_admin" {
-  project = "greymatter-deployment"
+  project = "greymatter-development"
   role    = "roles/compute.storageAdmin"
   member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
 }
