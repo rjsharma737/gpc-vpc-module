@@ -87,7 +87,7 @@ resource "google_compute_router" "router" {
       name            = local.bgp_session1
       peer_ip_address = var.peer_router_bgp_ipv4
       interface_name  = local.intf0_name
-      #advertised_route_priority = 100
+      advertised_route_priority = 100
       bfd             = {
         session_initiation_mode = "DISABLED"
       }
@@ -97,7 +97,7 @@ resource "google_compute_router" "router" {
       name            = local.bgp_session2
       peer_ip_address = var.peer_router_bgp_ipv4
       interface_name  = local.intf1_name
-      #advertised_route_priority = 100
+      advertised_route_priority = 100
       bfd             = {
         session_initiation_mode = "DISABLED"
       }
