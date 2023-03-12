@@ -3,7 +3,7 @@ provider "google" {
   region  = var.region
 }
 
-data "google_compute_network" "network" {
+data "google_compute_network" "vpc" {
   name = var.network_name
 }
 
@@ -62,7 +62,7 @@ resource "google_compute_vpn_tunnel" "tunnel2" {
 
 resource "google_compute_router" "router" {
   name    = local.cloud_router
-  network = google_compute_network.network.self_link
+  network = google_compute_network.vpc.self_link
   
   bgp {
     asn               = var.peer_asn
