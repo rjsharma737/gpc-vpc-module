@@ -39,11 +39,7 @@ resource "google_compute_vpn_gateway" "gateway" {
     shared_secret = var.shared_secret
   }
   */
-      tunnel_options {
-    pre_shared_key = var.shared_secret
-    local_traffic_selector = ["0.0.0.0/0"]
-    remote_traffic_selector = ["0.0.0.0/0"]
-  }
+
 }
 
 resource "google_compute_vpn_tunnel" "tunnel1" {
