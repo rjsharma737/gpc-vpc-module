@@ -118,7 +118,6 @@ resource "google_compute_vpn_tunnel" "tunnel1" {
   peer_ip              = var.peer_ip1
   shared_secret        = var.shared_secret
   target_vpn_gateway   = google_compute_vpn_gateway.gateway.self_link
-  shared_secret        = var.shared_secret
   #local_traffic_selector  = ["0.0.0.0/0"]
   #remote_traffic_selector = ["192.168.0.0/19"]
 }
@@ -128,7 +127,6 @@ resource "google_compute_vpn_tunnel" "tunnel2" {
   peer_ip              = var.peer_ip2
   shared_secret        = var.shared_secret
   target_vpn_gateway   = google_compute_vpn_gateway.gateway.self_link
-  shared_secret        = var.shared_secret
   #local_traffic_selector  = ["0.0.0.0/0"]
   #remote_traffic_selector = ["192.168.0.0/19"]
 }
