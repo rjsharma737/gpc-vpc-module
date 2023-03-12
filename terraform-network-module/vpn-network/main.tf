@@ -26,17 +26,14 @@ resource "google_compute_vpn_gateway" "gateway" {
   labels = {
     owner = "terraform"
   }
-
   depends_on = [
     data.google_compute_network.network
   ]
-
   vpn_interface {
     name        = local.intf0_name
     peer_ip     = var.peer_ip1
     shared_secret = var.shared_secret
   }
-
   vpn_interface {
     name        = local.intf1_name
     peer_ip     = var.peer_ip2
@@ -65,19 +62,16 @@ resource "google_compute_vpn_tunnel" "tunnel2" {
 resource "google_compute_router" "router" {
   name    = local.cloud_router
   network = google_compute_network.network.self_link
-
   
   bgp {
     asn               = var.peer_asn
     advertise_mode    = "CUSTOM"
     advertised_route_priority = 100
-
     interface {
       name               = local.intf0_name
       ip_address         = var.cloud_router_bgp_ipv4
       peer_ip_address    = var.peer_router_bgp_ipv4
     }
-
     interface {
       name               = local.intf1_name
       ip_address         = var.cloud_router_bgp_ipv4
@@ -93,7 +87,6 @@ resource "google_compute_router" "router" {
         session_initiation_mode = "DISABLED"
       }
     }
-
     bgp_session {
       name            = local.bgp_session2
       peer_ip_address = var.peer_router_bgp_ipv4
