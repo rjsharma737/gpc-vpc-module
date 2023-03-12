@@ -23,12 +23,11 @@ resource "google_compute_vpn_gateway" "gateway" {
   name        = local.gateway_name
   network     = data.google_compute_network.network.self_link
   description = "VPN setup for HQ."
-  labels = {
-    owner = "terraform"
-  }
+
   depends_on = [
     data.google_compute_network.network
   ]
+  /*
   vpn_interface {
     name        = local.intf0_name
     peer_ip     = var.peer_ip1
@@ -38,6 +37,12 @@ resource "google_compute_vpn_gateway" "gateway" {
     name        = local.intf1_name
     peer_ip     = var.peer_ip2
     shared_secret = var.shared_secret
+  }
+  */
+      tunnel_options {
+    pre_shared_key = var.shared_secret
+    local_traffic_selector = ["0.0.0.0/0"]
+    remote_traffic_selector = ["0.0.0.0/0"]
   }
 }
 
