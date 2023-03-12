@@ -177,78 +177,69 @@ resource "google_compute_vpn_gateway" "gateway" {
   depends_on = [
     data.google_compute_network.network
   ]
-  vpn_interface {
-    name        = local.intf0_name
-    peer_ip     = var.peer_ip1
-    shared_secret = var.shared_secret
-  }
-  vpn_interface {
-    name        = local.intf1_name
-    peer_ip     = var.peer_ip2
-    shared_secret = var.shared_secret
+
+  dynamic "vpn_interface" {
+    for_each = var.vpn_peer_ips
+    content {
+      name        = "vpn-interface-${vpn_interface.key}"
+      peer_ip     = vpn_interface.value
+      shared_secret = var.shared_secret
+    }
   }
 }
 
-resource "google_compute_vpn_tunnel" "tunnel1" {
-  name                = local.tunnel1_name
-  peer_ip             = var.peer_ip1
+resource "google_compute_vpn_tunnel" "tunnel" {
+  count               = length(var.vpn_peer_ips)
+  name                = "${var.project}-ha-vpn-tunnel_${count.index+1}"
+  peer_ip             = var.vpn_peer_ips[count.index]
   shared_secret       = var.shared_secret
   target_vpn_gateway  = google_compute_vpn_gateway.gateway.self_link
   ike_version         = 2
-  peer_gateway_interface = local.intf0_name
-}
-
-resource "google_compute_vpn_tunnel" "tunnel2" {
-  name                = local.tunnel2_name
-  peer_ip             = var.peer_ip2
-  shared_secret       = var.shared_secret
-  target_vpn_gateway  = google_compute_vpn_gateway.gateway.self_link
-  ike_version         = 2
-  peer_gateway_interface = local.intf1_name
+  local_traffic_selector {
+    ip_ranges = ["10.0.1.0/24"]
+  }
+  remote_traffic_selector {
+    ip_ranges = ["192.168.1.0/24"]
+  }
+  dynamic "vpn_gateway_interface" {
+    for_each = [0, 1]
+    content {
+      id = google_compute_vpn_gateway.gateway.vpn_interfaces[vpn_gateway_interface.value].id
+    }
+  }
 }
 
 resource "google_compute_router" "router" {
-  name                    = local.cloud_router
-  network                 = data.google_compute_network.network.self_link
-  region                  = var.region
+  name    = local.cloud_router
+  network = data.google_compute_network.network.self_link
   bgp {
     asn                   = var.router_asn
     advertise_mode        = "CUSTOM"
-    advertised_groups     = ["ALL_SUBNETS"]
+    advertise_ip_ranges   = ["10.0.0.0/8"]
+    advertised_route_priority = 1000
+    dynamic "peer" {
+      for_each = var.vpn_peer_ips
+      content {
+        ip_address = peer.value
+      }
+    }
   }
 }
 
-resource "google_compute_router_interface" "interface0" {
-  router          = google_compute_router.router.name
-  region          = var.region
-  ip_range        = var.router_intf0_ip_range
-  linked_vpn_tunnel = google_compute_vpn_tunnel.tunnel1.self_link
-  management_type   = "DEPRECATED"
+resource "google_compute_router_interface" "router_interface" {
+  router    = google_compute_router.router.name
+  ip_address = "169.254.0.1"
+  network   = data.google_compute_network.network.self_link
 }
 
-resource "google_compute_router_interface" "interface1" {
-  router          = google_compute_router.router.name
-  region          = var.region
-  ip_range        = var.router_intf1_ip_range
-  linked_vpn_tunnel = google_compute_vpn_tunnel.tunnel2.self_link
-  management_type   = "DEPRECATED"
+resource "google_compute_bgp_peering" "bgp_peering" {
+  count    = length(var.vpn_peer_ips)
+  name     = "${var.project}-bgp-session${count.index+1}"
+  router   = google_compute_router.router.name
+  interface_name = google_compute_router_interface.router_interface.name
+  peer_ip_address = var.vpn_peer_ips[count.index]
+  peer_asn = var.vpn_peer_asn
+  advertised_route_priority = 1000
 }
-
-resource "google_compute_bgp_peering" "bgp_peering1" {
-  name = "bgp-session1"
-  interface_name = google_compute_router_interface.interface0.name
-  peer_ip_address = var.peer_gw_ip1
-  peer_asn = var.peer_asn
-  router_asn = var.router_asn
-}
-
-resource "google_compute_bgp_peering" "bgp_peering2" {
-  name = "bgp-session2"
-  interface_name = google_compute_router_interface.interface1.name
-  peer_ip_address = var.peer_gw_ip2
-  peer_asn = var.peer_asn
-  router_asn = var.router_asn
-}
-
 
 
