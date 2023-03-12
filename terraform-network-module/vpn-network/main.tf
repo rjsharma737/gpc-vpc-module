@@ -66,11 +66,12 @@ resource "google_compute_router" "router" {
   name    = local.cloud_router
   network = google_compute_network.network.self_link
 
+  /*
   bgp {
     asn               = var.peer_asn
     advertise_mode    = "CUSTOM"
     advertised_route_priority = 100
-/*
+
     interface {
       name               = local.intf0_name
       ip_address         = var.cloud_router_bgp_ipv4
@@ -82,21 +83,7 @@ resource "google_compute_router" "router" {
       ip_address         = var.cloud_router_bgp_ipv4
       peer_ip_address    = var.peer_router_bgp_ipv4
     }
-    */
-      
-    ##
-    interface {
-  name            = local.intf0_name
-  ip_address      = var.cloud_router_bgp_ipv4[0]
-  peer_ip_address = var.peer_router_bgp_ipv4[0]
-}
-
-interface {
-  name            = local.intf1_name
-  ip_address      = var.cloud_router_bgp_ipv4[1]
-  peer_ip_address = var.peer_router_bgp_ipv4[1]
-}
-    ##
+   
     bgp_session {
       name            = local.bgp_session1
       peer_ip_address = var.peer_router_bgp_ipv4
@@ -110,6 +97,42 @@ interface {
     bgp_session {
       name            = local.bgp_session2
       peer_ip_address = var.peer_router_bgp_ipv4
+      interface_name  = local.intf1_name
+      advertised_route_priority = 100
+      bfd             = {
+        session_initiation_mode = "DISABLED"
+      }
+    }
+  }
+}
+*/
+  
+
+bgp {
+    asn               = var.peer_asn
+    advertise_mode    = "CUSTOM"
+    interface {
+      name               = local.intf0_name
+      ip_address         = var.cloud_router_bgp_ipv4[0]
+      peer_ip_address    = var.peer_router_bgp_ipv4[0]
+    }
+    interface {
+      name               = local.intf1_name
+      ip_address         = var.cloud_router_bgp_ipv4[1]
+      peer_ip_address    = var.peer_router_bgp_ipv4[1]
+    }
+    bgp_session {
+      name            = local.bgp_session1
+      peer_ip_address = var.peer_router_bgp_ipv4[0]
+      interface_name  = local.intf0_name
+      advertised_route_priority = 100
+      bfd             = {
+        session_initiation_mode = "DISABLED"
+      }
+    }
+    bgp_session {
+      name            = local.bgp_session2
+      peer_ip_address = var.peer_router_bgp_ipv4[1]
       interface_name  = local.intf1_name
       advertised_route_priority = 100
       bfd             = {
