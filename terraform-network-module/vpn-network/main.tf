@@ -155,13 +155,13 @@ data "google_compute_network" "network" {
 }
 
 locals {
-  tunnel1_name    = "${var.project}-ha-vpn-tunnel_1"
-  tunnel2_name    = "${var.project}-ha_vpn-tunnel_2"
-  gateway_name    = "${var.project}-ha_vpn-gateway"
-  intf0_name      = "${var.project}-ha_vpn_gateway-interface0"
-  intf1_name      = "${var.project}-ha_vpn-gateway-interface1"
-  peer_gw_name    = "${var.project}-ha_vpn-peer-gateway"
-  cloud_router    = "${var.project}-ha_vpn-cloud-router"
+  tunnel1_name    = "${var.project}-ha-vpn-tunnel-1"
+  tunnel2_name    = "${var.project}-ha-vpn-tunnel-2"
+  gateway_name    = "${var.project}-ha-vpn-gateway"
+  intf0_name      = "${var.project}-ha-vpn-gateway-interface0"
+  intf1_name      = "${var.project}-ha-vpn-gateway-interface1"
+  peer_gw_name    = "${var.project}-ha-vpn-peer-gateway"
+  cloud_router    = "${var.project}-ha-vpn-cloud-router"
   bgp_session1    = "${var.project}-bgp-session1"
   bgp_session2    = "${var.project}-bgp-session2"
 }
