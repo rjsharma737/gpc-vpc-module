@@ -1,14 +1,4 @@
-output "vpn_gateway_public_ip" {
-  value = google_compute_vpn_gateway.gateway.public_ip_address
-}
 
-output "vpn_gateway_interface0_ip" {
-  value = google_compute_vpn_gateway.gateway.vpn_interface[0].ip_address
-}
-
-output "vpn_gateway_interface1_ip" {
-  value = google_compute_vpn_gateway.gateway.vpn_interface[1].ip_address
-}
 
 output "vpn_gateway_tunnel1_address" {
   value = google_compute_vpn_tunnel.tunnel1.self_link
