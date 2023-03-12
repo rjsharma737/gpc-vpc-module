@@ -21,11 +21,11 @@ locals {
 
 resource "google_compute_vpn_gateway" "gateway" {
   name        = local.gateway_name
-  network     = data.google_compute_network.network.self_link
+  network     = data.google_compute_network.vpc.self_link
   description = "VPN setup for HQ."
 
   depends_on = [
-    data.google_compute_network.network
+    data.google_compute_network.vpc
   ]
   /*
   vpn_interface {
