@@ -62,75 +62,6 @@ resource "google_compute_vpn_tunnel" "tunnel2" {
   #local_traffic_selector = [""]
   #remote_traffic_selector = ["192.168.0.0/19"]
 }
-*/
-  
-
-######
-
-provider "google" {
-  project = var.project
-  region  = var.region
-}
-
-data "google_compute_network" "network" {
-  name = var.network_name
-}
-
-locals {
-  tunnel1_name    = "${var.project}-ha-vpn-tunnel_1"
-  tunnel2_name    = "${var.project}-ha-vpn-tunnel_2"
-  gateway_name    = "${var.project}-ha-vpn-gateway"
-  intf0_name      = "${var.project}-ha-vpn-gateway-interface0"
-  intf1_name      = "${var.project}-ha-vpn-gateway-interface1"
-  peer_gw_name    = "${var.project}-ha-vpn-peer-gateway"
-  cloud_router    = "${var.project}-ha-vpn-cloud-router"
-  bgp_session1    = "${var.project}-bgp-session1"
-  bgp_session2    = "${var.project}-bgp-session2"
-}
-
-resource "google_compute_vpn_gateway" "gateway" {
-  name        = local.gateway_name
-  network     = data.google_compute_network.network.self_link
-  description = "VPN setup for HQ."
-  labels = {
-    owner = "terraform"
-  }
-
-  depends_on = [
-    data.google_compute_network.network
-  ]
-
-  vpn_interface {
-    name          = local.intf0_name
-    peer_ip       = var.peer_ip1
-    shared_secret = var.shared_secret
-  }
-
-  vpn_interface {
-    name          = local.intf1_name
-    peer_ip       = var.peer_ip2
-    shared_secret = var.shared_secret
-  }
-}
-
-resource "google_compute_vpn_tunnel" "tunnel1" {
-  name                 = local.tunnel1_name
-  peer_ip              = var.peer_ip1
-  shared_secret        = var.shared_secret
-  target_vpn_gateway   = google_compute_vpn_gateway.gateway.self_link
-  #local_traffic_selector  = ["0.0.0.0/0"]
-  #remote_traffic_selector = ["192.168.0.0/19"]
-}
-
-resource "google_compute_vpn_tunnel" "tunnel2" {
-  name                 = local.tunnel2_name
-  peer_ip              = var.peer_ip2
-  shared_secret        = var.shared_secret
-  target_vpn_gateway   = google_compute_vpn_gateway.gateway.self_link
-  #local_traffic_selector  = ["0.0.0.0/0"]
-  #remote_traffic_selector = ["192.168.0.0/19"]
-}
-
 
 resource "google_compute_router" "router" {
   name    = local.cloud_router
@@ -174,3 +105,95 @@ resource "google_compute_router" "router" {
     }
   }
 }
+*/
+  
+
+provider "google" {
+  project = var.project
+  region  = var.region
+}
+
+data "google_compute_network" "network" {
+  name = var.network_name
+}
+
+locals {
+  tunnel1_name    = "${var.project}-ha-vpn-tunnel_1"
+  tunnel2_name    = "${var.project}-ha-vpn-tunnel_2"
+  gateway_name    = "${var.project}-ha-vpn-gateway"
+  intf0_name      = "${var.project}-ha-vpn-gateway-interface0"
+  intf1_name      = "${var.project}-ha-vpn-gateway-interface1"
+  peer_gw_name    = "${var.project}-ha-vpn-peer-gateway"
+  cloud_router    = "${var.project}-ha-vpn-cloud-router"
+  bgp_session1    = "${var.project}-bgp-session1"
+  bgp_session2    = "${var.project}-bgp-session2"
+}
+
+resource "google_compute_vpn_gateway" "gateway" {
+  name        = local.gateway_name
+  network     = data.google_compute_network.network.self_link
+  description = "VPN setup for HQ."
+  labels = {
+    owner = "terraform"
+  }
+
+  depends_on = [
+    data.google_compute_network.network
+  ]
+
+  dynamic "vpn_interface" {
+    for_each = var.vpn_interfaces
+    content {
+      name          = vpn_interface.value.name
+      peer_ip       = vpn_interface.value.peer_ip
+      shared_secret = vpn_interface.value.shared_secret
+    }
+  }
+}
+
+resource "google_compute_vpn_tunnel" "tunnel1" {
+  name                 = local.tunnel1_name
+  peer_ip              = var.peer_ip1
+  shared_secret        = var.shared_secret
+  target_vpn_gateway   = google_compute_vpn_gateway.gateway.self_link
+}
+
+resource "google_compute_vpn_tunnel" "tunnel2" {
+  name                 = local.tunnel2_name
+  peer_ip              = var.peer_ip2
+  shared_secret        = var.shared_secret
+  target_vpn_gateway   = google_compute_vpn_gateway.gateway.self_link
+}
+
+resource "google_compute_router" "router" {
+  name    = local.cloud_router
+  network = data.google_compute_network.network.self_link
+
+  bgp {
+    asn               = var.peer_asn
+    advertise_mode    = "CUSTOM"
+    advertised_route_priority = 100
+
+    dynamic "interface" {
+      for_each = var.bgp_interfaces
+      content {
+        name               = interface.value.name
+        ip_address         = interface.value.ip_address
+        peer_ip_address    = interface.value.peer_ip_address
+      }
+    }
+
+    dynamic "bgp_session" {
+      for_each = var.bgp_sessions
+      content {
+        name                        = bgp_session.value.name
+        peer_ip_address             = bgp_session.value.peer_ip_address
+        interface_name              = bgp_session.value.interface_name
+        bfd = {
+          session_initiation_mode  = "DISABLED"
+        }
+      }
+    }
+  }
+}
+
