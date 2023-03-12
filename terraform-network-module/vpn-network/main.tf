@@ -110,7 +110,7 @@ resource "google_compute_router" "router" {
   
 
 
-
+/*
 provider "google" {
   project = var.project
   region  = var.region
@@ -247,7 +247,190 @@ resource "google_compute_router_bgp_peer" "peer" {
     }
   }
 }
+*/
+  
 
 
 
+###########################################################################
+
+provider "google" {
+  project = var.project
+  region  = var.region
+}
+
+data "google_compute_network" "network" {
+  name = var.network_name
+}
+
+locals {
+  tunnel1_name    = "${var.project}-ha-vpn-tunnel-1"
+  tunnel2_name    = "${var.project}-ha-vpn-tunnel-2"
+  gateway_name    = "${var.project}-ha-vpn-gateway"
+  intf0_name      = "${var.project}-ha-vpn-gateway-interface0"
+  intf1_name      = "${var.project}-ha-vpn-gateway-interface1"
+  peer_gw_name    = "${var.project}-ha-vpn-peer-gateway"
+  cloud_router    = "${var.project}-ha-vpn-cloud-router"
+  bgp_session1    = "${var.project}-bgp-session1"
+  bgp_session2    = "${var.project}-bgp-session2"
+  labels = {
+    owner = "terraform"
+  }
+}
+
+
+
+resource "random_string" "shared_secret" {
+  length  = 16
+  special = true
+}
+
+resource "google_compute_vpn_gateway" "vpn_gateway" {
+  provider    = google
+  project     = var.project
+  region      = var.region
+  name        = local.gateway_name
+  description = "VPN Gateway"
+
+  labels = local.labels
+
+  network = var.network_self_link
+
+  depends_on = [
+    google_compute_router_interface.router_interface0,
+    google_compute_router_interface.router_interface1
+  ]
+
+  vpn_interfaces {
+    id                    = 0
+    ip_address            = "auto"
+    peer_gcp_gateway_interface = google_compute_vpn_tunnel.vpn_tunnel1.self_link
+  }
+
+  vpn_interfaces {
+    id                    = 1
+    ip_address            = "auto"
+    peer_gcp_gateway_interface = google_compute_vpn_tunnel.vpn_tunnel2.self_link
+  }
+}
+
+resource "google_compute_vpn_tunnel" "tunnel1" {
+  provider = google
+  project  = var.project
+  region   = var.region
+  name     = local.tunnel1_name
+  peer_ip  = var.peer_ip1
+
+  target_vpn_gateway = google_compute_vpn_gateway.vpn_gateway.id
+
+  shared_secret    = random_string.shared_secret.result
+  shared_secret_sha = sha1(random_string.shared_secret.result)
+
+  depends_on = [
+    google_compute_vpn_gateway.vpn_gateway,
+  ]
+}
+
+resource "google_compute_vpn_tunnel" "tunnel2" {
+  provider = google
+  project  = var.project
+  region   = var.region
+  name     = local.tunnel2_name
+  peer_ip  = var.peer_ip2
+
+  target_vpn_gateway = google_compute_vpn_gateway.vpn_gateway.id
+
+  shared_secret    = random_string.shared_secret.result
+  shared_secret_sha = sha1(random_string.shared_secret.result)
+
+  depends_on = [
+    google_compute_vpn_gateway.vpn_gateway,
+  ]
+}
+
+resource "google_compute_router_interface" "router_interface" {
+  provider = google
+  project  = var.project
+  region   = var.region
+  name     = local.cloud_router
+  router   = google_compute_router.router.self_link
+  ip_range = var.router_interface_ip_range
+
+  depends_on = [
+    google_compute_router.router,
+  ]
+}
+
+resource "google_compute_router_bgp_peer" "peer" {
+  provider = google
+  project  = var.project
+  region   = var.region
+  router   = google_compute_router.router.name
+  peer_config {
+    interface_name = google_compute_router_interface.router_interface.name
+    peer_ip_address = var.peer_ip1
+    peer_asn = var.peer_router_asn
+  }
+
+  depends_on = [
+    google_compute_router.router_interface,
+  ]
+}
+
+resource "google_compute_router_bgp_peer" "peer2" {
+  provider = google
+  project  = var.project
+  region   = var.region
+  router   = google_compute_router.router.name
+  peer_config {
+    interface_name = google_compute_router_interface.router_interface.name
+    peer_ip_address = var.peer_ip2
+    peer_asn = var.peer_router_asn
+  }
+
+  depends_on = [
+    google_compute_router.router_interface,
+  ]
+}
+
+resource "google_compute_router_bgp" "bgp" {
+  provider = google
+  project  = var.project
+  region   = var.region
+  router   = google_compute_router.router.name
+  asn      = var.router_asn
+  advertise_mode = "CUSTOM"
+
+  advertised_route {
+    description = "Advertised route for Tunnel 1"
+    ip_range = var.tunnel1_custom_route
+  }
+  
+advertised_route {
+    description = "Advertised route for Tunnel 2"
+  ip_range = var.tunnel2_custom_route
+}
+
+dynamic "bgp_peer" {
+for_each = var.bgp_peer_ips
+content {
+peer_ip = bgp_peer.value
+peer_asn = var.peer_asn
+interface_name = google_compute_router_interface.router_interface.name
+}
+}
+
+dynamic "bgp_session" {
+for_each = var.bgp_sessions
+content {
+name = bgp_session.value
+interface_name = google_compute_router_interface.router_interface.name
+peer_asn = var.peer_asn
+peer_ip = var.peer_ip1
+advertise_groups {
+name = "google_manufactured"
+}
+}
+}
+}
 
