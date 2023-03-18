@@ -55,7 +55,7 @@ variable "delete_disks_on_instance_delete" {
 variable "network_tags" {
   type    = list(string)
 }
-
+/*
 variable "vpc_prefix" {
   type = string
   default = "terraform-arch/devops-${var.project}-vpc-state"
@@ -71,7 +71,7 @@ variable "instance_prefix" {
   default = "terraform-arch/devops-${var.project}-instances-state"
 }
 
-/*
+
 variable "network" {
   description = "Network to deploy to. Only one of network or subnetwork should be specified."
   default     = ""
