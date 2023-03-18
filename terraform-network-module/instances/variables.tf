@@ -56,7 +56,20 @@ variable "network_tags" {
   type    = list(string)
 }
 
+variable "vpc_prefix" {
+  type = string
+  default = "terraform-arch/devops-${var.project}-vpc-state"
+}
 
+variable "vpn_prefix" {
+  type = string
+  default = "terraform-arch/devops-${var.project}-vpn-state"
+}
+
+variable "instance_prefix" {
+  type = string
+  default = "terraform-arch/devops-${var.project}-instances-state"
+}
 
 /*
 variable "network" {
