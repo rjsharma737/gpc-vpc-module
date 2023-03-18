@@ -21,7 +21,9 @@ variable "instance_names" {
 
 variable "instance_machine_types" {
   type    = list(string)
+  default = ["e2-medium"]
 }
+
 
 variable "instance_boot_disk_sizes" {
   type    = list(number)
@@ -29,7 +31,9 @@ variable "instance_boot_disk_sizes" {
 
 variable "instance_boot_disk_types" {
   type    = list(string)
+  default = ["SSD"]
 }
+
 
 variable "instance_ssh_keys" {
   type    = list(string)
