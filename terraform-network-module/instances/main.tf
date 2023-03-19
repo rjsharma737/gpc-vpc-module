@@ -56,7 +56,8 @@ resource "google_compute_disk" "boot_disk" {
   size  = var.instance_boot_disk_sizes[count.index]
   image = var.instance_image
 
-  depends_on = [google_compute_instance.instance.*.id]
+  depends_on = google_compute_instance.instance.*.self_link
+
 
 }
   
