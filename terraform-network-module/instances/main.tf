@@ -3,7 +3,7 @@ resource "google_compute_instance" "instance" {
 
   name         = var.instance_names[count.index]
   machine_type = var.instance_machine_types[count.index]
-  zone         = data.google_compute_subnetwork.subnet.zone
+  #zone         = data.google_compute_subnetwork.subnet.zone
 
   boot_disk {
     initialize_params {
