@@ -113,9 +113,9 @@ data "google_compute_subnetwork" "subnet" {
   depends_on    = [google_compute_instance.instance] # Wait for instances to be created
 }
 
-data "google_compute_zones" "zones" {
-  region = var.subnet_region
-}
+#data "google_compute_zones" "zones" {
+ # region = var.subnet_region
+#}
 
 */
 
