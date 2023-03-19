@@ -55,7 +55,8 @@ resource "google_compute_disk" "boot_disk" {
   size  = var.instance_boot_disk_sizes[count.index]
   image = var.instance_image
 
-  depends_on = [for instance in google_compute_instance.instance : instance]
+  depends_on = depends_on = flatten([for instance in google_compute_instance.instance : [instance.id]])
+
 }
 
 data "google_compute_subnetwork" "subnet" {
