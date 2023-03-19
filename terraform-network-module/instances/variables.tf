@@ -56,7 +56,7 @@ variable "network_tags" {
   type    = list(string)
 }
 
-
+/*
 variable "gce_ssh_user" {
   description = "username for ssh connection"
 }
@@ -79,5 +79,5 @@ variable "gce_ssh_user1" {
 variable "gce_ssh_pub_key_file1" {
   description = "public key for ssh connection"
 }
-
+*/
 
