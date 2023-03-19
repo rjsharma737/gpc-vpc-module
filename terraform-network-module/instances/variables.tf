@@ -7,6 +7,12 @@ variable "instance_count" {
   default = 1
 }
 
+variable "vpc_network_name" {
+  description = "Name of the VPC network to launch the instances in."
+  type        = string
+}
+
+
 variable "subnet_name" {
   type    = string
 }
