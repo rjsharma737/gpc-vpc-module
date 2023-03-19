@@ -21,7 +21,7 @@ resource "google_compute_instance" "instance" {
     }
   }
 
-    metadata = {
+  metadata = {
     ssh-keys = join("\n", var.instance_ssh_keys)
   }
 
@@ -30,11 +30,7 @@ resource "google_compute_instance" "instance" {
   tags = var.network_tags
 
   lifecycle {
-    ignore_changes = [      network_interface[0].subnetwork,
-      labels,
-      metadata,
-      tags,
-    ]
+    ignore_changes = [network_interface.0.subnetwork,      labels,      metadata,      tags,    ]
   }
 }
 
@@ -47,15 +43,12 @@ resource "google_compute_disk" "boot_disk" {
   size  = var.instance_boot_disk_sizes[count.index]
   image = var.instance_image
 
-  #depends_on = [    google_compute_instance.instance[count.index],
-  #]
-  depends_on = [for i in range(var.num_instances) : google_compute_instance.instance[i]]
-
+  depends_on = [google_compute_instance.instance[count.index]]
 }
 
 data "google_compute_subnetwork" "subnet" {
-  name       = var.subnet_name
-  region     = var.subnet_region
+  name   = var.subnet_name
+  region = var.subnet_region
 }
 
 data "google_compute_zones" "zones" {
