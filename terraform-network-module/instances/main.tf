@@ -43,7 +43,7 @@ resource "google_compute_disk" "boot_disk" {
 
   name  = "${google_compute_instance.instance[count.index].name}-boot-disk"
   type  = var.instance_boot_disk_types[count.index]
-  zone  = data.google_compute_subnetwork.subnet.zone
+  #zone  = data.google_compute_subnetwork.subnet.zone
   size  = var.instance_boot_disk_sizes[count.index]
   image = var.instance_image
 
