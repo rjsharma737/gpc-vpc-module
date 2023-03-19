@@ -21,9 +21,7 @@ resource "google_compute_instance" "instance" {
     }
   }
 
-  metadata = {
-    ssh-keys = join("\n", var.instance_ssh_keys)
-  }
+  metadata = var.metadata
 
   labels = var.instance_labels
 
