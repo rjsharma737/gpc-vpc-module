@@ -3,7 +3,7 @@ resource "google_compute_instance" "instance" {
 
   name         = var.instance_names[count.index]
   machine_type = var.instance_machine_types[count.index]
-  #zone         = data.google_compute_subnetwork.subnet.zone
+  zone         = data.google_compute_subnetwork.subnet.zone
 
   boot_disk {
     initialize_params {
@@ -43,7 +43,7 @@ resource "google_compute_disk" "boot_disk" {
 
   name  = "${google_compute_instance.instance[count.index].name}-boot-disk"
   type  = var.instance_boot_disk_types[count.index]
-  #zone  = data.google_compute_subnetwork.subnet.zone
+  zone  = data.google_compute_subnetwork.subnet.zone
   size  = var.instance_boot_disk_sizes[count.index]
   image = var.instance_image
 
@@ -115,9 +115,9 @@ data "google_compute_subnetwork" "subnet" {
   depends_on    = [google_compute_instance.instance] # Wait for instances to be created
 }
 
-#data "google_compute_zones" "zones" {
- # region = var.subnet_region
-#}
+data "google_compute_zones" "zones" {
+  region = var.subnet_region
+}
 
 */
 
