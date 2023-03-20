@@ -18,6 +18,7 @@ resource "google_compute_instance" "instance" {
 
   network_interface {
     subnetwork = data.google_compute_subnetwork.subnet.self_link
+    network    = google_compute_network.vpc_network.self_link
     access_config {
       // Ephemeral IP is not requested
     }
@@ -53,8 +54,7 @@ resource "google_compute_disk" "boot_disk" {
 }
 
 data "google_compute_subnetwork" "subnet" {
-  name    = var.subnet_name
-  network = data.google_compute_network.vpc_network.self_link
+  name = var.subnet_name
 }
 
 
