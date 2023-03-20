@@ -21,8 +21,8 @@ resource "google_compute_instance" "instance" {
     }
   }
 
-  network_interface {
-    subnetwork = data.google_compute_subnetwork.subnet.self_link
+  #network_interface {
+  #  subnetwork = data.google_compute_subnetwork.subnet.self_link
 
     access_config {
       // Ephemeral IP is not requested
