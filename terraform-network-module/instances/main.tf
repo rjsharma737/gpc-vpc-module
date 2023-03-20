@@ -60,7 +60,7 @@ resource "google_compute_disk" "boot_disk" {
 
 data "google_compute_subnetwork" "subnet" {
   name       = var.subnet_name
-  region     = data.google_compute_network.vpc_network.region
+  region = data.google_compute_region.region.name
   network    = var.vpc_network_name
 }
 
