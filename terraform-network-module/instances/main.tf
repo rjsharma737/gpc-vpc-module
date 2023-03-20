@@ -1,12 +1,9 @@
-
-
 data "google_compute_network" "vpc_network" {
   name = var.vpc_network_name
 }
 
 data "google_compute_zones" "zones" {
-  project = data.google_compute_network.vpc_network.project
-  name    = data.google_compute_network.vpc_network.name
+  names = [data.google_compute_network.vpc_network.name]
 }
 
 resource "google_compute_instance" "instance" {
@@ -14,7 +11,7 @@ resource "google_compute_instance" "instance" {
 
   name         = var.instance_names[count.index]
   machine_type = var.instance_machine_types[count.index]
-  zone         = data.google_compute_zones.zones.names[count.index]
+  zone         = data.google_compute_zones.zones.names[0]
 
   boot_disk {
     initialize_params {
@@ -50,12 +47,13 @@ resource "google_compute_instance" "instance" {
   }
 }
 
+
 resource "google_compute_disk" "boot_disk" {
   count = var.instance_count
 
   name  = "${google_compute_instance.instance[count.index].name}-boot-disk"
   type  = var.instance_boot_disk_types[count.index]
-  zone  = data.google_compute_zones.zones.names[count.index]
+  zone  = data.google_compute_zones.zones.names[0]
   size  = var.instance_boot_disk_sizes[count.index]
   image = var.instance_image
 
@@ -64,8 +62,9 @@ resource "google_compute_disk" "boot_disk" {
 
 data "google_compute_subnetwork" "subnet" {
   name   = var.subnet_name
-  region = data.google_compute_zones.zones.names[0]
+  region = data.google_compute_network.vpc_network.region
 }
+
 
 
 /*
