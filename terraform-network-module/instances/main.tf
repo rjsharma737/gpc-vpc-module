@@ -1,3 +1,74 @@
+
+
+data "google_compute_network" "vpc_network" {
+  name = var.vpc_network_name
+}
+
+data "google_compute_zones" "zones" {
+  project = data.google_compute_network.vpc_network.project
+  name    = data.google_compute_network.vpc_network.name
+}
+
+resource "google_compute_instance" "instance" {
+  count = var.instance_count
+
+  name         = var.instance_names[count.index]
+  machine_type = var.instance_machine_types[count.index]
+  zone         = data.google_compute_zones.zones.names[count.index]
+
+  boot_disk {
+    initialize_params {
+      size  = var.instance_boot_disk_sizes[count.index]
+      type  = var.instance_boot_disk_types[count.index]
+      image = var.instance_image
+    }
+  }
+
+  network_interface {
+    subnetwork = data.google_compute_subnetwork.subnet.self_link
+
+    access_config {
+      // Ephemeral IP is not requested
+    }
+  }
+
+  metadata = {
+    ssh-keys = join("\n", var.instance_ssh_keys)
+  }
+
+  labels = var.instance_labels
+
+  tags = var.network_tags
+
+  lifecycle {
+    ignore_changes = [
+      network_interface[0].subnetwork,
+      labels,
+      metadata,
+      tags,
+    ]
+  }
+}
+
+resource "google_compute_disk" "boot_disk" {
+  count = var.instance_count
+
+  name  = "${google_compute_instance.instance[count.index].name}-boot-disk"
+  type  = var.instance_boot_disk_types[count.index]
+  zone  = data.google_compute_zones.zones.names[count.index]
+  size  = var.instance_boot_disk_sizes[count.index]
+  image = var.instance_image
+
+  depends_on = [google_compute_instance.instance]
+}
+
+data "google_compute_subnetwork" "subnet" {
+  name   = var.subnet_name
+  region = data.google_compute_zones.zones.names[0]
+}
+
+
+/*
 data "google_compute_network" "vpc_network" {
   name = var.vpc_network_name
 }
@@ -69,7 +140,7 @@ data "google_compute_subnetwork" "subnet" {
   name       = var.subnet_name
   region     = data.google_compute_network.vpc_network.region
 }
-
+*/
 
 
 
