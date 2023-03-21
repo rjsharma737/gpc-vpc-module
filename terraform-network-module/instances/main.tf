@@ -22,7 +22,7 @@ resource "google_compute_instance" "instance" {
   labels = var.instance_labels
   tags = var.network_tags
   lifecycle {
-    ignore_changes = [network_interface.0.subnetwork, labels, metadata, tags]
+    ignore_changes = [network_interface.0.subnetwork,      labels,      metadata,      tags,    ]
   }
 }
 
@@ -34,7 +34,6 @@ resource "google_compute_disk" "boot_disk" {
   size  = var.instance_boot_disk_sizes[count.index]
   image = var.instance_image
   depends_on = [for instance in google_compute_instance.instance : instance.id]
-
 }
 
 data "google_compute_subnetwork" "subnet" {
@@ -45,7 +44,6 @@ data "google_compute_subnetwork" "subnet" {
 data "google_compute_zones" "zones" {
   region = var.subnet_region
 }
-
 
 
 
