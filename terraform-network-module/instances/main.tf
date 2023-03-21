@@ -3,9 +3,8 @@ data "google_compute_network" "vpc_network" {
 }
 
 data "google_compute_subnetwork" "subnet" {
-  name       = var.subnet_name
-  region     = var.subnet_region
-  network    = data.google_compute_network.vpc_network.self_link
+  name   = var.subnet_name
+  region = var.subnet_region
 }
 
 resource "google_compute_instance" "instance" {
