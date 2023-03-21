@@ -89,15 +89,15 @@ resource "google_compute_instance" "instance" {
 resource "google_compute_disk" "boot_disk" {
   count = var.instance_count
 
-  name  = "${google_compute_instance.instance[count.index].name}-boot-disk"
-  type  = var.instance_boot_disk_types[count.index]
-  zone  = data.google_compute_subnetwork.subnet.zone
-  size  = var.instance_boot_disk_sizes[count.index]
-  image = var.instance_image
+  name  = "${var.instance_name}-${count.index}"
+  type  = var.boot_disk_type
+  size  = var.boot_disk_size_gb
 
-  #depends_on = [google_compute_instance.instance[count.index]]
-  depends_on = [for instance in google_compute_instance.instance : instance]
+  zone  = var.zone
+
+  depends_on = [google_compute_instance.instance[count.index].self_link]
 }
+
 
 data "google_compute_subnetwork" "subnet" {
   name   = var.subnet_name
