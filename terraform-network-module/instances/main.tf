@@ -1,7 +1,7 @@
 data "google_compute_subnetwork" "subnet" {
   name    = var.subnet_name
   region  = var.subnet_region
-  network = data.google_compute_network.vpc_network.self_link
+  network = google_compute_network.vpc.self_link
 }
 
 data "google_compute_network" "vpc_network" {
@@ -11,7 +11,7 @@ data "google_compute_network" "vpc_network" {
 data "google_compute_regions" "regions" {}
 
 data "google_compute_zones" "zones" {
-  region = data.google_compute_network.vpc_network.region
+  region = google_compute_network.vpc.region
 }
 
 resource "google_compute_instance" "instance" {
