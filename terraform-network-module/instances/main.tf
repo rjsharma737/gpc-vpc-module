@@ -1,25 +1,8 @@
-data "google_compute_subnetwork" "subnet" {
-  name    = var.subnet_name
-  region  = var.subnet_region
-  network = google_compute_network.vpc.self_link
-}
-
-data "google_compute_network" "vpc_network" {
-  name = var.vpc_network_name
-}
-
-data "google_compute_regions" "regions" {}
-
-data "google_compute_zones" "zones" {
-  region = google_compute_network.vpc.region
-}
-
 resource "google_compute_instance" "instance" {
   count = var.instance_count
-
   name         = var.instance_names[count.index]
   machine_type = var.instance_machine_types[count.index]
-
+  zone         = var.instance_zone
   boot_disk {
     initialize_params {
       size  = var.instance_boot_disk_sizes[count.index]
@@ -27,53 +10,30 @@ resource "google_compute_instance" "instance" {
       image = var.instance_image
     }
   }
-
   network_interface {
-    subnetwork = data.google_compute_subnetwork.subnet.self_link
-
+    subnetwork = var.instance_subnetwork
     access_config {
       // Ephemeral IP is not requested
     }
   }
-
   metadata = {
     ssh-keys = join("\n", var.instance_ssh_keys)
   }
-
   labels = var.instance_labels
-
   tags = var.network_tags
-
   lifecycle {
-    ignore_changes = [
-      network_interface[0].subnetwork,
-      labels,
-      metadata,
-      tags,
-    ]
+    ignore_changes = [network_interface.0.subnetwork,      labels,      metadata,      tags,    ]
   }
-
-  # Specify a random zone from the list of zones in the VPC network region.
-  # This ensures that the instance is created in the same region as the VPC network.
-  # If the VPC network region is not supported by any zones, this will fail.
-  # future refer, we can add a fallback mechanism to handle this scenario if needed.
-  zone = data.google_compute_zones.zones.names[random(length(data.google_compute_zones.zones.names))]
 }
 
 resource "google_compute_disk" "boot_disk" {
   count = var.instance_count
-
   name  = "${google_compute_instance.instance[count.index].name}-boot-disk"
   type  = var.instance_boot_disk_types[count.index]
-  zone  = google_compute_instance.instance[count.index].zone
+  zone  = var.instance_zone
   size  = var.instance_boot_disk_sizes[count.index]
   image = var.instance_image
-
-  depends_on = [google_compute_instance.instance]
-}
-
-output "instance_names" {
-  value = google_compute_instance.instance[*].name
+  depends_on = [google_compute_instance.instance[count.index]]
 }
 
 
