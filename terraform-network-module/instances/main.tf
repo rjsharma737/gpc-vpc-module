@@ -2,6 +2,12 @@ data "google_compute_network" "vpc_network" {
   name = var.vpc_network_name
 }
 
+data "google_compute_subnetwork" "subnet" {
+  name       = var.subnet_name
+  region     = var.subnet_region
+  network    = data.google_compute_network.vpc_network.self_link
+}
+
 resource "google_compute_instance" "instance" {
   count = var.instance_count
 
@@ -52,12 +58,6 @@ resource "google_compute_disk" "boot_disk" {
   image = var.instance_image
 
   depends_on = [google_compute_instance.instance]
-}
-
-data "google_compute_subnetwork" "subnet" {
-  name       = var.subnet_name
-  region     = var.subnet_region
-  network    = data.google_compute_network.vpc_network.self_link
 }
 
 output "instance_names" {
