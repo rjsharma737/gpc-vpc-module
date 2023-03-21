@@ -1,4 +1,4 @@
-resource "google_compute_instance" "vm_instances" {
+resource "google_compute_instance" "instances" {
   count        = var.num_instances
   name         = var.instance_name[count.index]
   machine_type = var.machine_type
