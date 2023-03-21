@@ -2,7 +2,7 @@ resource "google_compute_instance" "instance" {
   count = var.instance_count
   name         = var.instance_names[count.index]
   machine_type = var.instance_machine_types[count.index]
-  zone         = var.instance_zone
+  zone         = data.google_compute_subnetwork.subnet.zone
   boot_disk {
     initialize_params {
       size  = var.instance_boot_disk_sizes[count.index]
@@ -11,7 +11,7 @@ resource "google_compute_instance" "instance" {
     }
   }
   network_interface {
-    subnetwork = var.instance_subnetwork
+    subnetwork = data.google_compute_subnetwork.subnet.self_link
     access_config {
       // Ephemeral IP is not requested
     }
@@ -22,7 +22,7 @@ resource "google_compute_instance" "instance" {
   labels = var.instance_labels
   tags = var.network_tags
   lifecycle {
-    ignore_changes = [network_interface.0.subnetwork,      labels,      metadata,      tags,    ]
+    ignore_changes = [network_interface.0.subnetwork, labels, metadata, tags]
   }
 }
 
@@ -30,11 +30,21 @@ resource "google_compute_disk" "boot_disk" {
   count = var.instance_count
   name  = "${google_compute_instance.instance[count.index].name}-boot-disk"
   type  = var.instance_boot_disk_types[count.index]
-  zone  = var.instance_zone
+  zone  = data.google_compute_subnetwork.subnet.zone
   size  = var.instance_boot_disk_sizes[count.index]
   image = var.instance_image
   depends_on = [google_compute_instance.instance[count.index]]
 }
+
+data "google_compute_subnetwork" "subnet" {
+  name   = var.subnet_name
+  region = var.subnet_region
+}
+
+data "google_compute_zones" "zones" {
+  region = var.subnet_region
+}
+
 
 
 
