@@ -15,19 +15,19 @@ variable "boot_disk" {
   type        = string
 }
 
-variable "source_disk_snapshot" {
-  description = "source disk snapshot name"
-  type        = string
-}
+#variable "source_disk_snapshot" {
+#  description = "source disk snapshot name"
+#  type        = string
+#}
 
-variable "source_disk_snapshot_external" {
-  description = "source additional disk snapshot name"
-  type        = string
-}
+#variable "source_disk_snapshot_external" {
+#  description = "source additional disk snapshot name"
+#  type        = string
+#}
 
 variable "disk_type" {
   description = "Boot disk type, can be either pd-ssd, local-ssd, or pd-standard"
-  default     = "pd-standard"
+  default     = "PD_SSD"
 }
 
 variable "disk_size_gb" {
