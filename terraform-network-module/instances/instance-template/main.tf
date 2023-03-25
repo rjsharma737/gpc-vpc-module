@@ -40,7 +40,7 @@ locals {
 ####################
 resource "google_compute_disk" "disk" {
   name                      = var.boot_disk
-  snapshot                  = var.source_disk_snapshot
+  #snapshot                  = var.source_disk_snapshot
   type                      = var.disk_type
   zone                      = var.zone
   physical_block_size_bytes = 4096
