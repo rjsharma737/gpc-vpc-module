@@ -19,7 +19,7 @@ resource "null_resource" "module_depends_on" {
 
 resource "google_compute_address" "internal_with_subnet_and_address" {
   #name         = "internal-address-${var.hostname}"
-  name = "internal-address-${var.hostname[0]}"
+  name = "internal-address-${index(var.hostname, 0)}"
   subnetwork   = var.subnetwork 
   address_type = "INTERNAL"
   region       = var.region
