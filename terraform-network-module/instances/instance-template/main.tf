@@ -52,7 +52,7 @@ resource "google_compute_disk" "disk" {
 resource "google_compute_instance_template" "tpl" {
   //depends_on              = [google_compute_disk.disk]
   name_prefix             = "${var.name_prefix}-"
-  project                 = var.project_id
+  project                 = var.project
   machine_type            = var.machine_type
   labels                  = var.labels
   metadata                = var.metadata
