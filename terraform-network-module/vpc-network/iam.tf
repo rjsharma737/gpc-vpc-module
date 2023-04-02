@@ -73,17 +73,17 @@ resource "google_project_iam_member" "owner" {
 
 
 
-  # Compute IAM roles
 resource "google_project_iam_member" "compute_roles" {
   for_each = local.iam_roles
   project = "greymatter-development"
   role    = each.value
   member = [
     for service_account in local.service_accounts :
-    "serviceAccount:${service_account}",
-    "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
-  ]
+      "serviceAccount:${service_account}",
+      "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
+    ]
 }
+
 
 # Storage IAM roles
 resource "google_storage_bucket_iam_member" "storage_roles" {
