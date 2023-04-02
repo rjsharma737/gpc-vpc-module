@@ -80,7 +80,6 @@ resource "google_project_iam_member" "compute_roles" {
   member = [
     for service_account in local.service_accounts :
       "serviceAccount:${service_account}"
-      "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
     ]
 }
 
