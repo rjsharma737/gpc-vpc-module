@@ -7,6 +7,7 @@ locals {
     "compute_admin" = "roles/compute.admin",
     "compute_storage_admin" = "roles/compute.storageAdmin",
   }
+  
   storage_roles = {
     "asia_artifacts_viewer" = "roles/storage.objectViewer",
     "asia_artifacts_admin" = "roles/storage.admin",
@@ -17,6 +18,14 @@ locals {
     "jenkins_backupfiles_admin" = "roles/storage.admin",
     "jenkins_backupfiles_object_admin" = "roles/storage.objectAdmin",
   }
+  
+  bucket_names = [
+    "asia.artifacts.greymatter-development.appspot.com",
+    "us.artifacts.greymatter-development.appspot.com",
+    "terraform-dev-statefiles",
+    "greymatter-jenkins-backupfiles",
+  ]
+
   service_accounts = [
     "devops-automationuser@cez-india.iam.gserviceaccount.com",
     "devops-automationuser@gm-dev-tompkins-integration.iam.gserviceaccount.com",
@@ -43,7 +52,6 @@ locals {
   ]
 }
 
-
 #roles for serivce account within the project
 resource "google_project_iam_member" "compute_network_admin" {
   project = var.project
@@ -69,7 +77,7 @@ resource "google_project_iam_member" "compute_roles" {
   for_each = local.iam_roles
   project = "greymatter-development"
   role    = each.value
-    members = [
+    member = [
     "serviceAccount:${var.service_account}",
     "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
   ]
@@ -77,19 +85,33 @@ resource "google_project_iam_member" "compute_roles" {
 
 
 
+
+
 # Storage IAM roles
 resource "google_storage_bucket_iam_member" "storage_roles" {
-for_each = local.storage_roles
+  for_each = local.storage_roles
 
-bucket = var.bucket
-role = each.value
+  bucket = each.key
+  role = each.value
+  member = [
+    for service_account in local.service_accounts :
+    "serviceAccount:${service_account}"
+  ]
+}
+
+
+#resource "google_storage_bucket_iam_member" "storage_roles" {
+#for_each = local.storage_roles
+
+#bucket = var.bucket
+#role = each.value
 
 # Add all service accounts to IAM policy for each storage role
-members = [
-for service_account in local.service_accounts :
-"serviceAccount:${service_account}"
-]
-}
+#members = [
+#for service_account in local.service_accounts :
+#"serviceAccount:${service_account}"
+#]
+#}
   
   
 /*
