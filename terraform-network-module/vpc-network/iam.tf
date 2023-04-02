@@ -74,7 +74,6 @@ resource "google_project_iam_member" "compute_roles" {
     "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
   ]
 }  
-}
 
 
 
