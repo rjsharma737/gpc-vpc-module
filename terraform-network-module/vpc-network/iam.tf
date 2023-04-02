@@ -92,8 +92,6 @@ resource "google_project_iam_member" "compute_roles" {
   project = "greymatter-development"
   role    = each.value
   member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com,${join(",", [for service_account in local.service_accounts : "serviceAccount:${service_account}"])}"
-]
-
 }
 
 
