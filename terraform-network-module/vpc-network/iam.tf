@@ -72,7 +72,7 @@ resource "google_project_iam_member" "owner" {
 }
 
 
-
+/*
 resource "google_project_iam_member" "compute_roles" {
   for_each = local.iam_roles
   project = "greymatter-development"
@@ -81,6 +81,23 @@ resource "google_project_iam_member" "compute_roles" {
     for service_account in local.service_accounts :
       "serviceAccount:${service_account}"
     ]
+}
+  */
+    
+  
+  
+  # Compute IAM roles
+resource "google_project_iam_member" "compute_roles" {
+  for_each = local.iam_roles
+  project = "greymatter-development"
+  role    = each.value
+  #member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com,${join(",", [for service_account in local.service_accounts : "serviceAccount:${service_account}"])}"
+  member = [
+  "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com",
+  [for i in range(length(local.service_accounts)) :
+    "serviceAccount:${local.service_accounts[i]}"]
+]
+
 }
 
 
@@ -91,10 +108,11 @@ resource "google_storage_bucket_iam_member" "storage_roles" {
   bucket = each.key
   role = each.value
   member = [
-    for service_account in local.service_accounts :
-    "serviceAccount:${service_account}"
+    for i in range(length(local.service_accounts)) :
+    "serviceAccount:${local.service_accounts[i]}"
   ]
 }
+
 
 
 #resource "google_storage_bucket_iam_member" "storage_roles" {
