@@ -86,7 +86,7 @@ resource "google_storage_bucket_iam_member" "storage_roles" {
 
   bucket = each.key
   role = each.value
-  member = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com,$join(",", [for i in range(length(local.service_accounts)) : "serviceAccount:${local.service_accounts[i]}"])"
+  member = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com,${join(",", [for i in range(length(local.service_accounts)) : "serviceAccount:${local.service_accounts[i]}"])}"
 }
 
 
