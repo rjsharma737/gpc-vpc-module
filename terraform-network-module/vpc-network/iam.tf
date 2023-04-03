@@ -69,22 +69,7 @@ resource "google_project_iam_member" "owner" {
   project = var.project
   role    = "roles/owner"
   member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
-}
-
-
-/*
-resource "google_project_iam_member" "compute_roles" {
-  for_each = local.iam_roles
-  project = "greymatter-development"
-  role    = each.value
-  member = [
-    for service_account in local.service_accounts :
-      "serviceAccount:${service_account}"
-    ]
-}
-  */
-    
-  
+} 
   
   # Compute IAM roles
 resource "google_project_iam_member" "compute_roles" {
@@ -105,21 +90,6 @@ resource "google_storage_bucket_iam_member" "storage_roles" {
 }
 
 
-
-#resource "google_storage_bucket_iam_member" "storage_roles" {
-#for_each = local.storage_roles
-
-#bucket = var.bucket
-#role = each.value
-
-# Add all service accounts to IAM policy for each storage role
-#members = [
-#for service_account in local.service_accounts :
-#"serviceAccount:${service_account}"
-#]
-#}
-  
-  
 /*
 #owner role in project gm-prod-common-services
 resource "google_project_iam_binding" "owner" {
