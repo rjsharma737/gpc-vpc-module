@@ -1,9 +1,9 @@
 # Define a map of roles with their corresponding members
 locals {
   iam_roles = {
-    "compute_network_admin" = "roles/compute.networkAdmin",
-    "cloud_sql_admin" = "roles/cloudsql.admin",
-    "owner" = "roles/owner",
+    #"compute_network_admin" = "roles/compute.networkAdmin",
+    #"cloud_sql_admin" = "roles/cloudsql.admin",
+    #"owner" = "roles/owner",
     "compute_admin" = "roles/compute.admin",
     "compute_storage_admin" = "roles/compute.storageAdmin",
   }
