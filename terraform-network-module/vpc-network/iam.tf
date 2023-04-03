@@ -48,7 +48,8 @@ locals {
     "devops-automationuser@greymatter-validation.iam.gserviceaccount.com",
     "devops-automationuser@poc-service-project-a-376015.iam.gserviceaccount.com",
     "devops-automationuser@ra-prod-seko.iam.gserviceaccount.com",
-    "devops-automationuser@rms-development-322610.iam.gserviceaccount.com"
+    "devops-automationuser@rms-development-322610.iam.gserviceaccount.com",
+    "devops-automationuser@gm-prod-gxo-hager.iam.gserviceaccount.com"
   ]
 }
 
