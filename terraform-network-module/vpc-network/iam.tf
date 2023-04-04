@@ -53,6 +53,7 @@ locals {
   ]
 }
 
+/*
 #roles for serivce account within the project
 resource "google_project_iam_member" "compute_network_admin" {
   project = var.project
@@ -71,6 +72,13 @@ resource "google_project_iam_member" "owner" {
   role    = "roles/owner"
   member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
 } 
+*/
+  
+resource "google_project_iam_member" "roles_new_project" {
+  project = var.project
+  for_each = local.iam_roles
+  role    = each.value
+  member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
   
   # Compute IAM roles
 resource "google_project_iam_member" "compute_roles" {
