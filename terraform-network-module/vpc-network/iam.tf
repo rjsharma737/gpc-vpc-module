@@ -79,6 +79,7 @@ resource "google_project_iam_member" "roles_new_project" {
   for_each = local.iam_roles
   role    = each.value
   member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
+}
   
   # Compute IAM roles
 resource "google_project_iam_member" "compute_roles" {
