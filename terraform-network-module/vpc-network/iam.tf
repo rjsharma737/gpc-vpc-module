@@ -53,26 +53,6 @@ locals {
   ]
 }
 
-/*
-#roles for serivce account within the project
-resource "google_project_iam_member" "compute_network_admin" {
-  project = var.project
-  role    = "roles/compute.networkAdmin"
-  member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
-}
-
-resource "google_project_iam_member" "cloud_sql_admin" {
-  project = var.project
-  role    = "roles/cloudsql.admin"
-  member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
-}
-
-resource "google_project_iam_member" "owner" {
-  project = var.project
-  role    = "roles/owner"
-  member  = "serviceAccount:${var.service_account_name}@${var.project}.iam.gserviceaccount.com"
-} 
-*/
   
 resource "google_project_iam_member" "roles_new_project" {
   project = var.project
